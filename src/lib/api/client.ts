@@ -444,13 +444,6 @@ export const validateAudioFormat = (file: File) => {
   return null;
 };
 
-export const validateTurnstileToken = (token: string | null) => {
-  if (!token) {
-    return "Please complete the verification challenge first";
-  }
-  return null;
-};
-
 // 文件转Base64
 export const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {

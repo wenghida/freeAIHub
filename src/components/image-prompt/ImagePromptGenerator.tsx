@@ -23,10 +23,7 @@ import {
   IMAGE_PROMPT_MOODS,
   IMAGE_PROMPT_ENVIRONMENTS,
 } from "@/lib/constants/image-prompt-dimensions";
-import TurnstileWidget from "@/components/security/TurnstileWidget";
-import {
-  validateTurnstileToken,
-} from "@/lib/api/client";
+import TurnstileModal from "@/components/shared/TurnstileModal";
 
 interface DimensionSelectorProps {
   label: string;
@@ -164,8 +161,7 @@ export default function ImagePromptGenerator() {
 
   // Turnstile states
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [showTurnstile, setShowTurnstile] = useState(true);
-  const [turnstileError, setTurnstileError] = useState<string | null>(null);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   // 清除消息
   const clearMessages = () => {
@@ -174,42 +170,80 @@ export default function ImagePromptGenerator() {
   };
 
   // Turnstile handlers
-  const handleTurnstileSuccess = (token: string) => {
-    setTurnstileToken(token);
-    setTurnstileError(null);
-    setShowTurnstile(false);
-    apiClient.setTurnstileToken(token);
-  };
-
-  const handleTurnstileError = () => {
-    setTurnstileError("Verification failed, please try again");
-    setTurnstileToken(null);
-    setShowTurnstile(true);
-    apiClient.clearTurnstileToken();
-  };
-
-  const handleTurnstileExpire = () => {
-    setTurnstileToken(null);
-    setShowTurnstile(true);
-    setTurnstileError(
-      "Verification expired, please complete verification again"
-    );
-    apiClient.clearTurnstileToken();
-  };
 
   // 生成提示词
   const handleGeneratePrompt = async () => {
     clearMessages();
-    setTurnstileError(null);
 
-    // Check Turnstile verification first
-    const tokenValidation = validateTurnstileToken(turnstileToken);
-    if (tokenValidation) {
-      setError(tokenValidation);
-      setShowTurnstile(true);
+    // 验证至少选择了一个选项
+    const hasAtLeastOneSelection =
+      subject ||
+      style ||
+      quality ||
+      composition ||
+      lighting ||
+      color ||
+      mood ||
+      environment;
+    if (!hasAtLeastOneSelection) {
+      setError("Please select at least one dimension");
       return;
     }
 
+    // 验证自定义输入字符限制
+    if (subject === "other" && customSubject && customSubject.length > 10) {
+      setError("Custom subject cannot exceed 10 characters");
+      return;
+    }
+
+    if (style === "other" && customStyle && customStyle.length > 10) {
+      setError("Custom style cannot exceed 10 characters");
+      return;
+    }
+
+    if (quality === "other" && customQuality && customQuality.length > 10) {
+      setError("Custom quality cannot exceed 10 characters");
+      return;
+    }
+
+    if (
+      composition === "other" &&
+      customComposition &&
+      customComposition.length > 10
+    ) {
+      setError("Custom composition cannot exceed 10 characters");
+      return;
+    }
+
+    if (lighting === "other" && customLighting && customLighting.length > 10) {
+      setError("Custom lighting cannot exceed 10 characters");
+      return;
+    }
+
+    if (color === "other" && customColor && customColor.length > 10) {
+      setError("Custom color cannot exceed 10 characters");
+      return;
+    }
+
+    if (mood === "other" && customMood && customMood.length > 10) {
+      setError("Custom mood cannot exceed 10 characters");
+      return;
+    }
+
+    if (
+      environment === "other" &&
+      customEnvironment &&
+      customEnvironment.length > 10
+    ) {
+      setError("Custom environment cannot exceed 10 characters");
+      return;
+    }
+
+    // 打开验证弹窗
+    setShowVerificationModal(true);
+  };
+
+  const handleGeneratePromptAfterVerification = async () => {
     // 验证至少选择了一个选项
     const hasAtLeastOneSelection =
       subject ||
@@ -347,18 +381,18 @@ export default function ImagePromptGenerator() {
         setGeneratedPrompt(result.prompt);
       } else {
         setError(result.error || "Failed to generate prompt");
-        
+
         // Check if it's a Turnstile-related error
         if (
           result.error?.includes("TURNSTILE") ||
           result.error?.includes("Verification")
         ) {
-          setShowTurnstile(true);
           setTurnstileToken(null);
         }
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to generate prompt";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to generate prompt";
       setError(errorMessage);
 
       // Check if it's a Turnstile-related error
@@ -366,7 +400,6 @@ export default function ImagePromptGenerator() {
         errorMessage.includes("TURNSTILE") ||
         errorMessage.includes("Verification")
       ) {
-        setShowTurnstile(true);
         setTurnstileToken(null);
       }
     } finally {
@@ -504,7 +537,7 @@ export default function ImagePromptGenerator() {
       <div className="flex flex-col sm:flex-row gap-2">
         <Button
           onClick={handleGeneratePrompt}
-          disabled={isGenerating || !turnstileToken}
+          disabled={isGenerating}
           className="bg-blue-600 hover:bg-blue-700 text-white flex-1 disabled:opacity-50"
         >
           {isGenerating ? (
@@ -512,8 +545,6 @@ export default function ImagePromptGenerator() {
               <Wand2 className="w-4 h-4 mr-2 animate-spin" />
               Generating...
             </>
-          ) : !turnstileToken ? (
-            "Complete verification first"
           ) : (
             <>
               <Wand2 className="w-4 h-4 mr-2" />
@@ -531,28 +562,32 @@ export default function ImagePromptGenerator() {
         </Button>
       </div>
 
-      {/* Turnstile verification widget */}
-      {showTurnstile && (
-        <div>
-          <TurnstileWidget
-            siteKey={
-              process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
-              "0x4AAAAAAAxxxxxxxxxxxxxxxxxx"
-            }
-            onSuccess={handleTurnstileSuccess}
-            onError={handleTurnstileError}
-            onExpire={handleTurnstileExpire}
-            theme="light"
-            size="normal"
-            className="flex justify-center"
-          />
-          {turnstileError && (
-            <p className="text-red-600 text-sm mt-2 text-center">
-              {turnstileError}
-            </p>
-          )}
-        </div>
-      )}
+      {/* Verification Modal */}
+      <TurnstileModal
+        open={showVerificationModal}
+        onOpenChange={setShowVerificationModal}
+        siteKey={
+          process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+          "0x4AAAAAAAxxxxxxxxxxxxxxxxxx"
+        }
+        onSuccess={(token) => {
+          setTurnstileToken(token);
+          apiClient.setTurnstileToken(token);
+          setShowVerificationModal(false);
+          // 验证成功后执行生成逻辑
+          handleGeneratePromptAfterVerification();
+        }}
+        onError={() => {
+          setTurnstileToken(null);
+          apiClient.clearTurnstileToken();
+          setShowVerificationModal(false);
+        }}
+        onExpire={() => {
+          setTurnstileToken(null);
+          apiClient.clearTurnstileToken();
+          setShowVerificationModal(false);
+        }}
+      />
 
       {generatedPrompt && (
         <div className="space-y-4">

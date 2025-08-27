@@ -149,7 +149,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   );
   apiUrl.searchParams.set("width", width);
   apiUrl.searchParams.set("height", height);
-  apiUrl.searchParams.set("model", "turbo");
+  apiUrl.searchParams.set("model", "flux");
   apiUrl.searchParams.set("nologo", "true");
   apiUrl.searchParams.set("safe", "true");
   apiUrl.searchParams.set("private", "true");

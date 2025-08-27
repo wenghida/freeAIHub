@@ -21,15 +21,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { apiClient } from "@/lib/api/client";
-import {
-  copyToClipboard,
-  downloadFile,
-  validateTurnstileToken,
-} from "@/lib/api/client";
+import { copyToClipboard, downloadFile } from "@/lib/api/client";
 import { TEXT_TO_TEXT_MODELS } from "@/lib/constants/models";
-import TurnstileWidget from "@/components/security/TurnstileWidget";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import MainLayout from "@/components/layout/MainLayout";
+import TurnstileModal from "@/components/shared/TurnstileModal";
 
 export default function TextToTextPage() {
   const [inputText, setInputText] = useState("");
@@ -41,8 +37,7 @@ export default function TextToTextPage() {
 
   // Turnstile states
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [showTurnstile, setShowTurnstile] = useState(true);
-  const [turnstileError, setTurnstileError] = useState<string | null>(null);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   // Clear messages after a delay
   const clearMessages = () => {
@@ -59,42 +54,28 @@ export default function TextToTextPage() {
   const clearSuccess = () => setSuccess(null);
 
   // Turnstile handlers
-  const handleTurnstileSuccess = (token: string) => {
-    setTurnstileToken(token);
-    setTurnstileError(null);
-    setShowTurnstile(false);
-    apiClient.setTurnstileToken(token);
-  };
-
-  const handleTurnstileError = () => {
-    setTurnstileError("Verification failed, please try again");
-    setTurnstileToken(null);
-    setShowTurnstile(true);
-    apiClient.clearTurnstileToken();
-  };
-
-  const handleTurnstileExpire = () => {
-    setTurnstileToken(null);
-    setShowTurnstile(true);
-    setTurnstileError(
-      "Verification expired, please complete verification again"
-    );
-    apiClient.clearTurnstileToken();
-  };
 
   // Text to Text functions
   const handleProcessText = async () => {
     clearError();
-    setTurnstileError(null);
 
-    // Check Turnstile verification first
-    const tokenValidation = validateTurnstileToken(turnstileToken);
-    if (tokenValidation) {
-      setError(tokenValidation);
-      setShowTurnstile(true);
+    const trimmedText = inputText.trim();
+    if (!trimmedText) {
+      setError("Please enter text content");
       return;
     }
 
+    // 验证文本长度
+    if (trimmedText.length > 5000) {
+      setError("Text content cannot exceed 5000 characters");
+      return;
+    }
+
+    // 打开验证弹窗
+    setShowVerificationModal(true);
+  };
+
+  const handleProcessTextAfterVerification = async () => {
     const trimmedText = inputText.trim();
     if (!trimmedText) {
       setError("Please enter text content");
@@ -123,18 +104,18 @@ export default function TextToTextPage() {
         clearMessages();
       } else {
         setError(result.error || "Text processing failed");
-        
+
         // Check if it's a Turnstile-related error
         if (
           result.error?.includes("TURNSTILE") ||
           result.error?.includes("Verification")
         ) {
-          setShowTurnstile(true);
           setTurnstileToken(null);
         }
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Text processing failed";
+      const errorMessage =
+        err instanceof Error ? err.message : "Text processing failed";
       setError(errorMessage);
 
       // Check if it's a Turnstile-related error
@@ -142,7 +123,6 @@ export default function TextToTextPage() {
         errorMessage.includes("TURNSTILE") ||
         errorMessage.includes("Verification")
       ) {
-        setShowTurnstile(true);
         setTurnstileToken(null);
       }
     } finally {
@@ -175,7 +155,8 @@ export default function TextToTextPage() {
             Text to Text
           </h1>
           <p className="text-gray-600 text-lg font-serif">
-            Intelligent text processing including translation, summarization, and rewriting
+            Intelligent text processing including translation, summarization,
+            and rewriting
           </p>
         </div>
 
@@ -224,7 +205,7 @@ export default function TextToTextPage() {
                 </div>
                 <Button
                   onClick={handleProcessText}
-                  disabled={isProcessingText || !turnstileToken}
+                  disabled={isProcessingText}
                   className="w-full bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
                 >
                   {isProcessingText ? (
@@ -232,34 +213,36 @@ export default function TextToTextPage() {
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Processing...
                     </>
-                  ) : !turnstileToken ? (
-                    "Complete verification first"
                   ) : (
                     "Process Text"
                   )}
                 </Button>
-                {/* Turnstile verification widget */}
-                {showTurnstile && (
-                  <div>
-                    <TurnstileWidget
-                      siteKey={
-                        process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
-                        "0x4AAAAAAAxxxxxxxxxxxxxxxxxx"
-                      }
-                      onSuccess={handleTurnstileSuccess}
-                      onError={handleTurnstileError}
-                      onExpire={handleTurnstileExpire}
-                      theme="light"
-                      size="normal"
-                      className="flex justify-center"
-                    />
-                    {turnstileError && (
-                      <p className="text-red-600 text-sm mt-2 text-center">
-                        {turnstileError}
-                      </p>
-                    )}
-                  </div>
-                )}
+                {/* Verification Modal */}
+                <TurnstileModal
+                  open={showVerificationModal}
+                  onOpenChange={setShowVerificationModal}
+                  siteKey={
+                    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+                    "0x4AAAAAAAxxxxxxxxxxxxxxxxxx"
+                  }
+                  onSuccess={(token) => {
+                    setTurnstileToken(token);
+                    apiClient.setTurnstileToken(token);
+                    setShowVerificationModal(false);
+                    // 验证成功后执行处理逻辑
+                    handleProcessTextAfterVerification();
+                  }}
+                  onError={() => {
+                    setTurnstileToken(null);
+                    apiClient.clearTurnstileToken();
+                    setShowVerificationModal(false);
+                  }}
+                  onExpire={() => {
+                    setTurnstileToken(null);
+                    apiClient.clearTurnstileToken();
+                    setShowVerificationModal(false);
+                  }}
+                />
               </CardContent>
             </Card>
           </div>
@@ -320,7 +303,9 @@ export default function TextToTextPage() {
                     </svg>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                    <h3 className="text-sm font-medium text-red-800">
+                      {error}
+                    </h3>
                   </div>
                   <div className="ml-auto pl-3">
                     <button

@@ -206,6 +206,14 @@ Each route implements:
 - Error messages, validation messages, and user-facing text must be in English
 - System logs can be in either language but should be consistent within each module
 
+### Human Verification (Turnstile)
+
+All AI generation features implement Cloudflare Turnstile human verification:
+- Uses modal-based verification triggered on generate actions
+- Implemented via `TurnstileModal` component
+- Token validation before API calls
+- Proper error handling for verification failures
+
 ## Testing Checklist
 
 ### Functional Testing

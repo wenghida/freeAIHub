@@ -24,7 +24,6 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import TurnstileWidget from "@/components/security/TurnstileWidget";
 import Link from "next/link";
 import { apiClient } from "@/lib/api/client";
 import {
@@ -32,11 +31,11 @@ import {
   copyToClipboard,
   downloadFile,
   downloadBase64Image,
-  validateTurnstileToken,
 } from "@/lib/api/client";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import MainLayout from "@/components/layout/MainLayout";
 import { ImageUpload } from "@/components/ImageUpload";
+import TurnstileModal from "@/components/shared/TurnstileModal";
 
 export default function ImageToImagePage() {
   const [prompt, setPrompt] = useState("");
@@ -55,8 +54,7 @@ export default function ImageToImagePage() {
 
   // Turnstile states
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [showTurnstile, setShowTurnstile] = useState(true);
-  const [turnstileError, setTurnstileError] = useState<string | null>(null);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   // Clear messages after a delay
   const clearMessages = () => {
@@ -73,28 +71,6 @@ export default function ImageToImagePage() {
   const clearSuccess = () => setSuccess(null);
 
   // Turnstile handlers
-  const handleTurnstileSuccess = (token: string) => {
-    setTurnstileToken(token);
-    setTurnstileError(null);
-    setShowTurnstile(false);
-    apiClient.setTurnstileToken(token);
-  };
-
-  const handleTurnstileError = () => {
-    setTurnstileError("Verification failed, please try again");
-    setTurnstileToken(null);
-    setShowTurnstile(true);
-    apiClient.clearTurnstileToken();
-  };
-
-  const handleTurnstileExpire = () => {
-    setTurnstileToken(null);
-    setShowTurnstile(true);
-    setTurnstileError(
-      "Verification expired, please complete verification again"
-    );
-    apiClient.clearTurnstileToken();
-  };
 
   // Handle image upload
   const handleImageUpload = (url: string) => {
@@ -109,16 +85,29 @@ export default function ImageToImagePage() {
   // Image to Image functions
   const handleGenerateImage = async () => {
     clearError();
-    setTurnstileError(null);
 
-    // Check Turnstile verification first
-    const tokenValidation = validateTurnstileToken(turnstileToken);
-    if (tokenValidation) {
-      setError(tokenValidation);
-      setShowTurnstile(true);
+    const trimmedPrompt = prompt.trim();
+    if (!trimmedPrompt) {
+      setError("Please enter an image description");
       return;
     }
 
+    // 验证prompt长度
+    if (trimmedPrompt.length > 500) {
+      setError("Image description cannot exceed 500 characters");
+      return;
+    }
+
+    if (!uploadedImageUrl) {
+      setError("Please upload an image first");
+      return;
+    }
+
+    // 打开验证弹窗
+    setShowVerificationModal(true);
+  };
+
+  const handleGenerateImageAfterVerification = async () => {
     const trimmedPrompt = prompt.trim();
     if (!trimmedPrompt) {
       setError("Please enter an image description");
@@ -159,14 +148,11 @@ export default function ImageToImagePage() {
         requestBody.height = imageHeight.toString();
       }
 
-      const result = await apiClient.fetchWithError(
-        "/api/image-to-image",
-        {
-          method: "POST",
-          body: JSON.stringify(requestBody),
-        }
-      );
-      
+      const result = await apiClient.fetchWithError("/api/image-to-image", {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+      });
+
       if (result.success) {
         setGeneratedImage(result.imageData);
         setSuccess("Image generated successfully");
@@ -187,7 +173,6 @@ export default function ImageToImagePage() {
         errorMessage.includes("TURNSTILE") ||
         errorMessage.includes("Verification")
       ) {
-        setShowTurnstile(true);
         setTurnstileToken(null);
       }
 
@@ -298,7 +283,10 @@ export default function ImageToImagePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ImageUpload onImageUpload={handleImageUpload} disabled={isGeneratingImage} />
+                <ImageUpload
+                  onImageUpload={handleImageUpload}
+                  disabled={isGeneratingImage}
+                />
               </CardContent>
             </Card>
 
@@ -456,7 +444,7 @@ export default function ImageToImagePage() {
                 </div>
                 <Button
                   onClick={handleGenerateImage}
-                  disabled={isGeneratingImage || !turnstileToken}
+                  disabled={isGeneratingImage}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
                 >
                   {isGeneratingImage ? (
@@ -464,34 +452,36 @@ export default function ImageToImagePage() {
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Generating...
                     </>
-                  ) : !turnstileToken ? (
-                    "Complete verification first"
                   ) : (
                     "Generate Image"
                   )}
                 </Button>
-                {/* Turnstile verification widget */}
-                {showTurnstile && (
-                  <div>
-                    <TurnstileWidget
-                      siteKey={
-                        process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
-                        "0x4AAAAAAAxxxxxxxxxxxxxxxxxx"
-                      }
-                      onSuccess={handleTurnstileSuccess}
-                      onError={handleTurnstileError}
-                      onExpire={handleTurnstileExpire}
-                      theme="light"
-                      size="normal"
-                      className="flex justify-center"
-                    />
-                    {turnstileError && (
-                      <p className="text-red-600 text-sm mt-2 text-center">
-                        {turnstileError}
-                      </p>
-                    )}
-                  </div>
-                )}
+                {/* Verification Modal */}
+                <TurnstileModal
+                  open={showVerificationModal}
+                  onOpenChange={setShowVerificationModal}
+                  siteKey={
+                    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+                    "0x4AAAAAAAxxxxxxxxxxxxxxxxxx"
+                  }
+                  onSuccess={(token) => {
+                    setTurnstileToken(token);
+                    apiClient.setTurnstileToken(token);
+                    setShowVerificationModal(false);
+                    // 验证成功后执行生成逻辑
+                    handleGenerateImageAfterVerification();
+                  }}
+                  onError={() => {
+                    setTurnstileToken(null);
+                    apiClient.clearTurnstileToken();
+                    setShowVerificationModal(false);
+                  }}
+                  onExpire={() => {
+                    setTurnstileToken(null);
+                    apiClient.clearTurnstileToken();
+                    setShowVerificationModal(false);
+                  }}
+                />
               </CardContent>
             </Card>
           </div>
