@@ -25,7 +25,7 @@ export interface TurnstileModalRef {
 
 const TurnstileModal = forwardRef<TurnstileModalRef, TurnstileModalProps>(
   ({ siteKey, onSuccess, onError, onExpire, open, onOpenChange }, ref) => {
-    const turnstileRef = useRef<{ reset: () => void }>(null);
+    const turnstileRef = useRef<{ reset: () => void; execute: () => void }>(null);
 
     useImperativeHandle(ref, () => ({
       reset: () => {

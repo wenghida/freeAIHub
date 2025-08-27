@@ -128,7 +128,6 @@ export default function TextToImagePage() {
         errorMessage.includes("TURNSTILE") ||
         errorMessage.includes("Verification")
       ) {
-        setShowTurnstile(true);
         setTurnstileToken(null);
       }
 
