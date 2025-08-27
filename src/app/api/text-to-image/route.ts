@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { NextRequest, NextResponse } from "next/server";
 import NodeCache from "node-cache";
 import { logger } from "@/lib/utils/logger";

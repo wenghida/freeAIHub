@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit } from '@/lib/middleware/rate-limiter'
 import { validateTurnstile } from '@/lib/middleware/turnstile-middleware'
