@@ -1,0 +1,51 @@
+### 测试文本转图像API
+GET http://localhost:3000/api/text-to-image?prompt=一只可爱的猫在花园里玩耍&width=512&height=512&model=flux
+
+### 测试文本转文本API - 翻译功能
+POST http://localhost:3000/api/text-to-text
+Content-Type: application/json
+
+{
+  "text": "Hello, how are you today? I hope everything is going well.",
+  "type": "translate",
+  "targetLanguage": "zh"
+}
+
+### 测试文本转文本API - 润色功能
+POST http://localhost:3000/api/text-to-text
+Content-Type: application/json
+
+{
+  "text": "这个产品很好，我很喜欢",
+  "type": "polish"
+}
+
+### 测试文本转文本API - 摘要功能
+POST http://localhost:3000/api/text-to-text
+Content-Type: application/json
+
+{
+  "text": "人工智能是计算机科学的一个分支，它企图了解智能的实质，并生产出一种新的能以人类智能相似的方式做出反应的智能机器。人工智能研究包括机器学习、深度学习、自然语言处理等领域。",
+  "type": "summarize"
+}
+
+### 测试文本转语音API
+POST http://localhost:3000/api/text-to-speech
+Content-Type: application/json
+
+{
+  "text": "你好，欢迎使用我们的AI语音合成服务。",
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "language": "zh",
+  "speed": 1.2
+}
+
+### 测试语音转文本API
+POST http://localhost:3000/api/speech-to-text
+Content-Type: application/json
+
+{
+  "audioData": "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=",
+  "format": "wav",
+  "language": "auto"
+}

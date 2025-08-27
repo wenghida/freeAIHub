@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+
+# Next.js
+/.next/
+/out/
+.next/
+out/
+
+# Development server
+.next
+out
+
+# Testing
+coverage/
+
+# Environment variables
+.env*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
+
+# OS generated files
+Thumbs.db
+.DS_Store
+
+# Local configuration files
+*.local
+
+# Claude Code files
+.claude/
+
+# Project specific files to ignore
+.eslintrc.json
+PROGRESS.md
+DEVELOPMENT_TASKS.md
+APIDOCS.MD
+DESIGN_DOCUMENT.md
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Local settings
+.claude/settings.local.json
