@@ -5,7 +5,7 @@ interface RateLimitData {
   resetTime: number;
 }
 
-class RateLimiter {
+export class RateLimiter {
   private requests = new Map<string, RateLimitData>();
   private readonly maxRequests: number;
   private readonly windowMs: number;
@@ -75,14 +75,6 @@ class RateLimiter {
   }
 }
 
-// 创建全局实例
-const rateLimiter = new RateLimiter(20, 60 * 1000); // 每分钟20次请求
-
-// 清理过期数据的定时器
-setInterval(() => {
-  rateLimiter.cleanup();
-}, 5 * 60 * 1000); // 每5分钟清理一次
-
 export function rateLimit(
   maxRequests?: number,
   windowMs?: number
@@ -118,6 +110,3 @@ export function rateLimit(
     return null;
   };
 }
-
-// 默认导出全局实例
-export { rateLimiter };

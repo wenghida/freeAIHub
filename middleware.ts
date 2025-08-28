@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { rateLimiter } from "@/lib/middleware/rate-limiter";
+import { RateLimiter } from "@/lib/middleware/rate-limiter";
 import {
   validateTurnstile,
   shouldSkipTurnstileValidation,
@@ -17,6 +17,9 @@ export const config = {
   ],
 };
 
+// 创建一个全局的限流器实例供中间件使用
+const globalRateLimiter = new RateLimiter(20, 60 * 1000); // 20 requests per minute
+
 export async function middleware(request: NextRequest) {
   // Check if we should skip Turnstile validation for this request
   if (!shouldSkipTurnstileValidation(request)) {
@@ -28,8 +31,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Apply IP rate limiting
-  const ip = rateLimiter.getKey(request);
-  const rateLimitResult = rateLimiter.checkLimit(ip);
+  const ip = globalRateLimiter.getKey(request);
+  const rateLimitResult = globalRateLimiter.checkLimit(ip);
 
   if (!rateLimitResult.allowed) {
     return NextResponse.json(

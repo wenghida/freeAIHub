@@ -11,23 +11,6 @@ import {
 import { rateLimit } from "@/lib/middleware/rate-limiter";
 import { validateTurnstile } from "@/lib/middleware/turnstile-middleware";
 
-// 创建缓存实例，TTL为5分钟
-const imageCache = new NodeCache({
-  stdTTL: 5 * 60, // 5分钟
-  checkperiod: 60, // 每60秒检查过期
-  useClones: false,
-});
-
-// 错误缓存，TTL为1分钟，最大缓存100个错误
-const errorCache = new NodeCache({
-  stdTTL: 60, // 1分钟
-  checkperiod: 30, // 每30秒检查过期
-  useClones: false,
-  maxKeys: 100, // 限制最大错误缓存数量
-});
-
-const rateLimiter = rateLimit(20, 60 * 1000); // 20 requests per minute
-
 interface TextToImageRequest {
   prompt: string;
   width?: string;
@@ -37,6 +20,18 @@ interface TextToImageRequest {
 }
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
+  // 在请求处理函数内部创建缓存实例，避免在全局作用域中创建
+  // 创建缓存实例，TTL为5分钟
+  const errorCache = new NodeCache({
+    stdTTL: 60, // 1分钟
+    checkperiod: 30, // 每30秒检查过期
+    useClones: false,
+    maxKeys: 100, // 限制最大错误缓存数量
+  });
+
+  // 在请求处理函数内部创建限流器实例
+  const rateLimiter = rateLimit(20, 60 * 1000); // 20 requests per minute
+
   // 应用速率限制
   const rateLimitResponse = await rateLimiter(request);
 
@@ -165,12 +160,16 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       apiUrl.searchParams.set("seed", seedValue.toString());
     } else {
       // 如果用户提供的seed无效，生成一个随机seed
-      seedValue = Math.floor(Math.random() * 1000000000);
+      // 使用 crypto.randomUUID() 生成随机数，避免在全局作用域中调用 Math.random()
+      const uuid = crypto.randomUUID();
+      seedValue = Math.abs(hashCode(uuid)) % 1000000000;
       apiUrl.searchParams.set("seed", seedValue.toString());
     }
   } else {
     // 用户未提供seed，生成一个随机seed
-    seedValue = Math.floor(Math.random() * 1000000000);
+    // 使用 crypto.randomUUID() 生成随机数，避免在全局作用域中调用 Math.random()
+    const uuid = crypto.randomUUID();
+    seedValue = Math.abs(hashCode(uuid)) % 1000000000;
     apiUrl.searchParams.set("seed", seedValue.toString());
   }
 
@@ -241,3 +240,14 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     throw apiError;
   }
 });
+
+// 添加一个简单的哈希函数，用于将 UUID 转换为数字
+function hashCode(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // 转换为 32 位整数
+  }
+  return hash;
+}
