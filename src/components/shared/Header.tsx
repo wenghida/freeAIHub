@@ -1,31 +1,34 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { useState } from 'react'
-import { Menu, X, Sparkles } from 'lucide-react'
+import Link from "next/link";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 const navigation = [
-  { name: 'Text to Image', href: '/text-to-image' },
-  { name: 'Text to Text', href: '/text-to-text' },
-  { name: 'Text to Speech', href: '/text-to-speech' },
-  { name: 'Speech to Text', href: '/speech-to-text' },
-]
+  { name: "Text to Image", href: "/text-to-image" },
+  { name: "Text to Text", href: "/text-to-text" },
+  { name: "Text to Speech", href: "/text-to-speech" },
+  { name: "Speech to Text", href: "/speech-to-text" },
+];
 
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+      <nav
+        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+        aria-label="Global"
+      >
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="flex items-center gap-2 text-xl font-bold text-gray-900">
-              <Sparkles className="h-6 w-6 text-purple-600" />
-              FreeAI Hub
+              <img src="/favicon.ico" alt="CalmSky AI" className="h-6 w-6" />
+              CalmSky AI
             </span>
           </Link>
         </div>
-        
+
         <div className="flex lg:hidden">
           <button
             type="button"
@@ -36,7 +39,7 @@ export default function Header() {
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        
+
         <div className="hidden lg:flex lg:gap-x-12">
           {navigation.map((item) => (
             <Link
@@ -48,8 +51,20 @@ export default function Header() {
             </Link>
           ))}
         </div>
-        
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
+          <Link
+            href="/privacy"
+            className="text-sm font-semibold leading-6 text-gray-900 hover:text-purple-600 transition-colors"
+          >
+            Privacy
+          </Link>
+          <Link
+            href="/terms"
+            className="text-sm font-semibold leading-6 text-gray-900 hover:text-purple-600 transition-colors"
+          >
+            Terms
+          </Link>
           <Link
             href="https://github.com/pollinations/pollinations"
             className="text-sm font-semibold leading-6 text-gray-900 hover:text-purple-600 transition-colors"
@@ -60,16 +75,16 @@ export default function Header() {
           </Link>
         </div>
       </nav>
-      
+
       {/* 移动端菜单 */}
-      <div className={`lg:hidden ${mobileMenuOpen ? 'block' : 'hidden'}`}>
+      <div className={`lg:hidden ${mobileMenuOpen ? "block" : "hidden"}`}>
         <div className="fixed inset-0 z-50"></div>
         <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                <Sparkles className="h-6 w-6 text-purple-600" />
-                FreeAI Hub
+                <img src="/favicon.ico" alt="CalmSky AI" className="h-6 w-6" />
+                CalmSky AI
               </span>
             </Link>
             <button
@@ -95,12 +110,27 @@ export default function Header() {
                   </Link>
                 ))}
               </div>
-              <div className="py-6">
+              <div className="py-6 space-y-2">
+                <Link
+                  href="/privacy"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Privacy
+                </Link>
+                <Link
+                  href="/terms"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Terms
+                </Link>
                 <Link
                   href="https://github.com/pollinations/pollinations"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   GitHub
                 </Link>
@@ -110,5 +140,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**FreeAI Hub** is a free AI multi-functional conversion platform based on Pollinations.AI API, providing four core features: text-to-image, text-to-text, text-to-speech, and speech-to-text.
+**CalmSky AI** is a free AI multi-functional conversion platform based on Pollinations.AI API, providing five core features: text-to-image, image-to-image, text-to-text, text-to-speech, and speech-to-text.
 
 ## Tech Stack
 
@@ -16,6 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **API**: Next.js API Routes
 - **Caching**: Node-cache for memory caching
 - **Audio**: RecordRTC for audio recording
+- **Security**: Cloudflare Turnstile for human verification
 
 ## Development Commands
 
@@ -51,6 +52,7 @@ src/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API routes connecting to Pollinations.AI
 │   │   ├── text-to-image/
+│   │   ├── image-to-image/
 │   │   ├── text-to-text/
 │   │   ├── text-to-speech/
 │   │   ├── speech-to-text/
@@ -69,7 +71,8 @@ src/
 │   ├── api/client.ts     # API client
 │   ├── middleware/       # API middleware
 │   │   ├── error-handler.ts
-│   │   └── rate-limiter.ts
+│   │   ├── rate-limiter.ts
+│   │   └── turnstile-middleware.ts
 │   ├── storage/          # Local storage management
 │   │   ├── local-storage.ts
 │   │   ├── history-storage.ts
@@ -88,10 +91,11 @@ The project has implemented the Next.js API routes that connect to the Pollinati
 ### Implemented API Routes
 
 1. `/api/text-to-image` - POST endpoint for generating images from text prompts
-2. `/api/text-to-text` - POST endpoint for processing text (translation, summarization, etc.)
-3. `/api/text-to-speech` - POST endpoint for converting text to speech
-4. `/api/speech-to-text` - POST endpoint for converting speech to text
-5. `/api/health` - GET endpoint for health checks
+2. `/api/image-to-image` - POST endpoint for generating images from existing images and text prompts
+3. `/api/text-to-text` - POST endpoint for processing text (translation, summarization, etc.)
+4. `/api/text-to-speech` - POST endpoint for converting text to speech
+5. `/api/speech-to-text` - POST endpoint for converting speech to text
+6. `/api/health` - GET endpoint for health checks
 
 Each route implements:
 
@@ -110,6 +114,13 @@ Each route implements:
 - **Body**: prompt, width, height, model, seed
 - **Cache**: 5 minutes TTL
 - **Validation**: prompt max 500 chars, valid image sizes
+
+### Image-to-Image
+
+- **Endpoint**: `/api/image-to-image`
+- **Method**: POST
+- **Body**: prompt, imageUrl, model, strength
+- **Validation**: prompt max 500 chars, valid image URL, strength 0-1
 
 ### Text-to-Text
 
@@ -169,6 +180,14 @@ Each route implements:
 - Response time monitoring
 - Error tracking and caching
 
+### Security
+
+- Cloudflare Turnstile human verification for all AI generation endpoints
+- Rate limiting enabled
+- Input sanitization
+- No sensitive data in logs
+- CORS properly configured
+
 ## Development Guidelines
 
 ### Code Style
@@ -194,10 +213,10 @@ Each route implements:
 
 ### Security
 
-- Rate limiting enabled
-- Input sanitization
-- No sensitive data in logs
-- CORS properly configured
+- All AI generation features implement Cloudflare Turnstile human verification
+- Rate limiting prevents abuse
+- Input sanitization prevents injection attacks
+- Secure error handling without information leakage
 
 ### Internationalization
 
@@ -209,6 +228,7 @@ Each route implements:
 ### Human Verification (Turnstile)
 
 All AI generation features implement Cloudflare Turnstile human verification:
+
 - Uses modal-based verification triggered on generate actions
 - Implemented via `TurnstileModal` component
 - Token validation before API calls
@@ -219,6 +239,7 @@ All AI generation features implement Cloudflare Turnstile human verification:
 ### Functional Testing
 
 - [ ] Text-to-image generation and download
+- [ ] Image-to-image generation and download
 - [ ] Text-to-text all modes (translation, polishing, etc.)
 - [ ] Text-to-speech audio generation and playback
 - [ ] Speech-to-text file upload and recording
@@ -242,6 +263,7 @@ All AI generation features implement Cloudflare Turnstile human verification:
 - [ ] Large file uploads
 - [ ] Long text inputs
 - [ ] Rate limiting tests
+- [ ] Turnstile verification failures
 
 ## 中文交互说明
 

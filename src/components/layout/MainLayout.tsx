@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Sparkles,
   Globe,
   ArrowRight,
   ImageIcon,
@@ -34,21 +33,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname();
 
   const aiServices = [
-    {
-      id: "text-to-image",
-      title: "Text to Image",
-      description:
-        "Convert your text descriptions into beautiful AI-generated images",
-      icon: ImageIcon,
-      color: "bg-blue-50 text-blue-600 border-blue-200",
-    },
-    {
-      id: "image-to-image",
-      title: "Image to Image",
-      description: "Transform your existing images with AI-powered editing",
-      icon: Wand2,
-      color: "bg-indigo-50 text-indigo-600 border-indigo-200",
-    },
+    // {
+    //   id: "image-to-image",
+    //   title: "Image to Image",
+    //   description: "Transform your existing images with AI-powered editing",
+    //   icon: Wand2,
+    //   color: "bg-indigo-50 text-indigo-600 border-indigo-200",
+    // },
     {
       id: "generate-image-prompt",
       title: "Generate Image Prompt",
@@ -95,31 +86,28 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div
+            <Link
+              href="/"
               className="flex items-center space-x-2 cursor-pointer"
-              onClick={() => router.push("/")}
             >
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+                <img src="/favicon.ico" alt="CalmSky AI" className="w-5 h-5" />
               </div>
               <h1 className="text-xl font-bold text-black font-sans">
-                FreeAI Hub
+                CalmSky AI
               </h1>
-            </div>
+            </Link>
 
             {/* Function Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
               {aiServices.map((service) => (
-                <button
+                <Link
                   key={service.id}
-                  onClick={() => {
-                    if (service.id === "generate-image-prompt") {
-                      // 路由到独立页面
-                      router.push("/generate-image-prompt");
-                    } else {
-                      router.push(`/${service.id}`);
-                    }
-                  }}
+                  href={
+                    service.id === "generate-image-prompt"
+                      ? "/generate-image-prompt"
+                      : `/${service.id}`
+                  }
                   className={`transition-colors font-medium ${
                     isActiveService(service.id)
                       ? "text-blue-600 border-b-2 border-blue-600 pb-1"
@@ -127,7 +115,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
                   }`}
                 >
                   {service.title}
-                </button>
+                </Link>
               ))}
             </nav>
           </div>
@@ -140,17 +128,17 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
-              <div
+              <Link
+                href="/"
                 className="flex items-center space-x-2 mb-4 cursor-pointer"
-                onClick={() => router.push("/")}
               >
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
+                  <img src="/favicon.ico" alt="CalmSky AI" className="w-5 h-5" />
                 </div>
                 <h3 className="text-xl font-bold text-black font-sans">
-                  FreeAI Hub
+                  CalmSky AI
                 </h3>
-              </div>
+              </Link>
               <p className="text-gray-600 mb-4 font-serif">
                 Free AI multi-function conversion platform providing
                 text-to-image, text-to-text, text-to-speech, and speech-to-text
@@ -158,49 +146,31 @@ export default function MainLayout({ children }: MainLayoutProps) {
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-black mb-4 font-sans">
-                AI Services
-              </h4>
+              <h4 className="font-semibold text-black mb-4 font-sans">Tools</h4>
               <ul className="space-y-2 text-gray-600 font-serif">
-                <li>
-                  <button
-                    onClick={() => {
-                      router.push("/text-to-image");
-                    }}
-                    className="hover:text-black transition-colors"
-                  >
-                    Text to Image
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      router.push("/image-to-image");
-                    }}
+                {/* <li>
+                  <Link
+                    href="/image-to-image"
                     className="hover:text-black transition-colors"
                   >
                     Image to Image
-                  </button>
-                </li>
+                  </Link>
+                </li> */}
                 <li>
-                  <button
-                    onClick={() => {
-                      router.push("/generate-image-prompt");
-                    }}
+                  <Link
+                    href="/generate-image-prompt"
                     className="hover:text-black transition-colors"
                   >
                     Generate Image Prompt
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={() => {
-                      router.push("/text-to-text");
-                    }}
+                  <Link
+                    href="/text-to-text"
                     className="hover:text-black transition-colors"
                   >
                     Text to Text
-                  </button>
+                  </Link>
                 </li>
                 {/* <li>
                   <button
@@ -225,18 +195,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-black mb-4 font-sans">
-                Support
-              </h4>
+              <h4 className="font-semibold text-black mb-4 font-sans">About</h4>
               <ul className="space-y-2 text-gray-600 font-serif">
-                <li>
-                  <Link
-                    href="/usage-guide"
-                    className="hover:text-black transition-colors"
-                  >
-                    Usage Instructions
-                  </Link>
-                </li>
                 <li>
                   <Link
                     href="/privacy"
@@ -253,19 +213,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
                     Terms of Service
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href="/contact"
-                    className="hover:text-black transition-colors"
-                  >
-                    Contact Us
-                  </Link>
-                </li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-200 mt-8 pt-8 text-center text-gray-600 font-serif">
-            <p>&copy; 2024 FreeAI Hub. All rights reserved.</p>
+            <p>&copy; 2025 CalmSky AI. All rights reserved.</p>
           </div>
         </div>
       </footer>

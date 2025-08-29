@@ -1,6 +1,6 @@
 # Cloudflare Turnstile Integration Setup
 
-This document provides step-by-step instructions for setting up and configuring Cloudflare Turnstile verification in the FreeAI Hub project.
+This document provides step-by-step instructions for setting up and configuring Cloudflare Turnstile verification in the CalmSky AI project.
 
 ## 🔧 Configuration Steps
 
@@ -14,7 +14,7 @@ This document provides step-by-step instructions for setting up and configuring 
    - Navigate to "Turnstile" in the Cloudflare dashboard
    - Click "Add a site"
    - Configure the following:
-     - **Site name**: Your project name (e.g., "FreeAI Hub")
+     - **Site name**: Your project name (e.g., "CalmSky AI")
      - **Domain**: Add your domains:
        - `localhost` (for development)
        - Your production domain (e.g., `your-domain.com`)
