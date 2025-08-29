@@ -36,6 +36,7 @@ import {
 } from "@/lib/api/client";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import MainLayout from "@/components/layout/MainLayout";
+import ImageGallery from "@/components/inspiration/ImageGallery";
 
 export default function HomePage() {
   const [prompt, setPrompt] = useState("");
@@ -215,6 +216,19 @@ export default function HomePage() {
     }
   };
 
+  // 处理灵感图片选择
+  const handleInspirationSelect = (inspirationPrompt: string) => {
+    setPrompt(inspirationPrompt);
+    setSuccess("Prompt applied from inspiration gallery");
+    clearMessages();
+
+    // 滚动到文本输入区域
+    const promptSection = document.getElementById("text-to-image-section");
+    if (promptSection) {
+      promptSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-white text-black">
@@ -235,7 +249,7 @@ export default function HomePage() {
         </section>
 
         {/* Text to Image功能区域 */}
-        <section className="py-16 px-4">
+        <section id="text-to-image-section" className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-black mb-4 font-sans">
@@ -498,6 +512,13 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Get Inspired Section */}
+        <section id="get-inspired" className="py-16 px-4 bg-white">
+          <div className="container mx-auto max-w-6xl">
+            <ImageGallery onPromptSelect={handleInspirationSelect} />
+          </div>
+        </section>
+
         {/* Features Section */}
         <section id="key-features" className="py-16 px-4 bg-white">
           <div className="container mx-auto max-w-6xl">
@@ -590,7 +611,10 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 font-serif">
-                    CalmSky AI is a free AI multi-functional conversion platform based on the Pollinations.AI API, providing five core functions: text-to-image, text-to-text, text-to-speech, and speech-to-text.
+                    CalmSky AI is a free AI multi-functional conversion platform
+                    based on the Pollinations.AI API, providing five core
+                    functions: text-to-image, text-to-text, text-to-speech, and
+                    speech-to-text.
                   </p>
                 </CardContent>
               </Card>
@@ -602,7 +626,9 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 font-serif">
-                    No. CalmSky AI is completely free to use, requires no registration, and has no hidden fees. We are committed to providing users with the best AI service experience.
+                    No. CalmSky AI is completely free to use, requires no
+                    registration, and has no hidden fees. We are committed to
+                    providing users with the best AI service experience.
                   </p>
                 </CardContent>
               </Card>
@@ -614,7 +640,8 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 font-serif">
-                    No. You can use all AI functions directly without any cumbersome registration process.
+                    No. You can use all AI functions directly without any
+                    cumbersome registration process.
                   </p>
                 </CardContent>
               </Card>
@@ -626,7 +653,9 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 font-serif">
-                    We use professional AI models to ensure high-quality output content. You can choose different dimensions and ratios to generate images as needed.
+                    We use professional AI models to ensure high-quality output
+                    content. You can choose different dimensions and ratios to
+                    generate images as needed.
                   </p>
                 </CardContent>
               </Card>
@@ -638,19 +667,24 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 font-serif">
-                    Multiple dimension ratios are supported, including 1:1 (square), 4:3 (landscape), 3:4 (portrait), 16:9 (widescreen), and 9:16 (vertical).
+                    Multiple dimension ratios are supported, including 1:1
+                    (square), 4:3 (landscape), 3:4 (portrait), 16:9
+                    (widescreen), and 9:16 (vertical).
                   </p>
                 </CardContent>
               </Card>
               <Card className="border-gray-200 bg-gray-50">
                 <CardHeader>
                   <CardTitle className="text-lg font-sans text-black">
-                    What processing options are included in the text-to-text function?
+                    What processing options are included in the text-to-text
+                    function?
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 font-serif">
-                    The text-to-text function includes various intelligent text processing options such as translation, polishing, summarization, continuation, and style conversion.
+                    The text-to-text function includes various intelligent text
+                    processing options such as translation, polishing,
+                    summarization, continuation, and style conversion.
                   </p>
                 </CardContent>
               </Card>
@@ -662,7 +696,8 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 font-serif">
-                    We have set reasonable rate limits (20 requests per minute per IP address) to ensure service stability and fairness.
+                    We have set reasonable rate limits (20 requests per minute
+                    per IP address) to ensure service stability and fairness.
                   </p>
                 </CardContent>
               </Card>
@@ -674,7 +709,9 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 font-serif">
-                    We implement Cloudflare Turnstile human verification to prevent abuse, all communications are encrypted via HTTPS, and users' sensitive information is not stored.
+                    We implement Cloudflare Turnstile human verification to
+                    prevent abuse, all communications are encrypted via HTTPS,
+                    and users' sensitive information is not stored.
                   </p>
                 </CardContent>
               </Card>

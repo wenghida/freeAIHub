@@ -33,6 +33,7 @@ import {
 } from "@/lib/api/client";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import MainLayout from "@/components/layout/MainLayout";
+import ImageGallery from "@/components/inspiration/ImageGallery";
 
 export default function TextToImagePage() {
   const [prompt, setPrompt] = useState("");
@@ -47,6 +48,7 @@ export default function TextToImagePage() {
   const [isGeneratingRandom, setIsGeneratingRandom] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showInspiration, setShowInspiration] = useState(false);
 
   // Turnstile states
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -214,6 +216,14 @@ export default function TextToImagePage() {
     }
   };
 
+  // 处理灵感图片选择
+  const handleInspirationSelect = (inspirationPrompt: string) => {
+    setPrompt(inspirationPrompt);
+    setShowInspiration(false);
+    setSuccess("Prompt applied from inspiration gallery");
+    clearMessages();
+  };
+
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -224,256 +234,289 @@ export default function TextToImagePage() {
           <p className="text-gray-600 text-lg font-serif">
             Convert your text descriptions into beautiful AI-generated images
           </p>
+
+          {/* Toggle buttons */}
+          <div className="flex justify-center gap-4 mt-6">
+            <Button
+              variant={!showInspiration ? "default" : "outline"}
+              onClick={() => setShowInspiration(false)}
+              className={`${
+                !showInspiration
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+              } transition-all duration-200`}
+            >
+              <ImageIcon className="w-4 h-4 mr-2" />
+              Generate
+            </Button>
+            <Button
+              variant={showInspiration ? "default" : "outline"}
+              onClick={() => setShowInspiration(true)}
+              className={`${
+                showInspiration
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+              } transition-all duration-200`}
+            >
+              <Wand2 className="w-4 h-4 mr-2" />
+              Get Inspired
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 左侧输入区域 */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Prompt输入 */}
-            <Card className="border-gray-200 bg-white">
-              <CardHeader>
-                <CardTitle className="text-lg font-sans text-black flex items-center">
-                  <MessageSquare className="w-5 h-5 mr-2 text-blue-600" />
-                  Prompt Input
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="relative">
-                  <Textarea
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="Describe the image you want to generate..."
-                    className="w-full h-32 p-3 border border-gray-200 rounded-lg bg-white text-black placeholder:text-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 pr-20"
-                  />
-                  <div className="absolute right-2 bottom-2 flex space-x-1">
-                    <button
-                      onClick={handleOptimizePrompt}
-                      disabled={isOptimizingPrompt}
-                      className="p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      title="Optimize prompt"
-                    >
-                      {isOptimizingPrompt ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Wand2 className="w-4 h-4" />
-                      )}
-                    </button>
-                    <button
-                      onClick={handleRandomPrompt}
-                      disabled={isGeneratingRandom}
-                      className="p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      title="Generate random prompt"
-                    >
-                      {isGeneratingRandom ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Shuffle className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* 参数设置 */}
-            <Card className="border-gray-200 bg-white">
-              <CardHeader>
-                <CardTitle className="text-lg font-sans text-black flex items-center">
-                  <Settings className="w-5 h-5 mr-2 text-blue-600" />
-                  Parameters
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label className="text-sm font-medium text-black mb-2 block">
-                    Aspect Ratio
-                  </Label>
-                  <div className="grid grid-cols-5 gap-2 items-end">
-                    <button
-                      onClick={() => {
-                        setImageWidth(1024);
-                        setImageHeight(1024);
-                        setSelectedShape("square");
-                      }}
-                      className="flex flex-col items-center"
-                    >
-                      <div
-                        className={`w-12 h-12 border-2 rounded transition-colors flex items-center justify-center ${
-                          selectedShape === "square"
-                            ? "border-green-500 bg-green-50"
-                            : "border-gray-300 hover:border-green-500"
-                        }`}
-                      >
-                        <span className="text-xs font-medium">1:1</span>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setImageWidth(1024);
-                        setImageHeight(768);
-                        setSelectedShape("landscape");
-                      }}
-                      className="flex flex-col items-center"
-                    >
-                      <div
-                        className={`w-12 h-9 border-2 rounded transition-colors flex items-center justify-center ${
-                          selectedShape === "landscape"
-                            ? "border-green-500 bg-green-50"
-                            : "border-gray-300 hover:border-green-500"
-                        }`}
-                      >
-                        <span className="text-xs font-medium">4:3</span>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setImageWidth(768);
-                        setImageHeight(1024);
-                        setSelectedShape("portrait");
-                      }}
-                      className="flex flex-col items-center"
-                    >
-                      <div
-                        className={`w-9 h-12 border-2 rounded transition-colors flex items-center justify-center ${
-                          selectedShape === "portrait"
-                            ? "border-green-500 bg-green-50"
-                            : "border-gray-300 hover:border-green-500"
-                        }`}
-                      >
-                        <span className="text-xs font-medium">3:4</span>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setImageWidth(1024);
-                        setImageHeight(576);
-                        setSelectedShape("wide");
-                      }}
-                      className="flex flex-col items-center"
-                    >
-                      <div
-                        className={`w-12 h-6.5 border-2 rounded transition-colors flex items-center justify-center ${
-                          selectedShape === "wide"
-                            ? "border-green-500 bg-green-50"
-                            : "border-gray-300 hover:border-green-500"
-                        }`}
-                      >
-                        <span className="text-xs font-medium">16:9</span>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setImageWidth(576);
-                        setImageHeight(1024);
-                        setSelectedShape("tall");
-                      }}
-                      className="flex flex-col items-center"
-                    >
-                      <div
-                        className={`w-6.5 h-12 border-2 rounded transition-colors flex items-center justify-center ${
-                          selectedShape === "tall"
-                            ? "border-green-500 bg-green-50"
-                            : "border-gray-300 hover:border-green-500"
-                        }`}
-                      >
-                        <span className="text-xs font-medium">9:16</span>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-                <Button
-                  onClick={handleGenerateImage}
-                  disabled={isGeneratingImage}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
-                >
-                  {isGeneratingImage ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    "Generate Image"
-                  )}
-                </Button>
-                {/* Verification Modal */}
-                <TurnstileModal
-                  open={showVerificationModal}
-                  onOpenChange={setShowVerificationModal}
-                  siteKey={
-                    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
-                    "0x4AAAAAAAxxxxxxxxxxxxxxxxxx"
-                  }
-                  onSuccess={(token) => {
-                    setTurnstileToken(token);
-                    apiClient.setTurnstileToken(token);
-                    setShowVerificationModal(false);
-                    // 验证成功后执行生成逻辑
-                    handleGenerateImageAfterVerification();
-                  }}
-                  onError={() => {
-                    setTurnstileToken(null);
-                    apiClient.clearTurnstileToken();
-                    setShowVerificationModal(false);
-                  }}
-                  onExpire={() => {
-                    setTurnstileToken(null);
-                    apiClient.clearTurnstileToken();
-                    setShowVerificationModal(false);
-                  }}
-                />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* 右侧结果展示 */}
-          <div className="lg:col-span-2">
-            <div className="relative h-full min-h-[400px] flex items-center justify-center">
-              {generatedImage || isImageLoading ? (
-                <>
-                  {isImageLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center z-10 bg-gray-50 rounded-lg">
-                      <LoadingSpinner size="md" message="generating..." />
-                    </div>
-                  )}
-                  {generatedImage && (
-                    <div className="relative">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={generatedImage}
-                        alt="Generated"
-                        className={`max-w-full max-h-full object-contain rounded-lg ${isImageLoading ? "opacity-0" : "opacity-100"}`}
-                        onLoad={() => {
-                          // 图片加载完成时，同时关闭两个加载状态
-                          setIsImageLoading(false);
-                          setIsGeneratingImage(false);
-                        }}
-                        onError={() => {
-                          // 图片加载失败时，同时关闭两个加载状态
-                          setIsImageLoading(false);
-                          setIsGeneratingImage(false);
-                          setError("Image loading failed");
-                        }}
-                      />
-                      {/* 下载按钮 */}
+        {/* 条件渲染：生成界面或灵感画廊 */}
+        {!showInspiration ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* 左侧输入区域 */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Prompt输入 */}
+              <Card className="border-gray-200 bg-white">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black flex items-center">
+                    <MessageSquare className="w-5 h-5 mr-2 text-blue-600" />
+                    Prompt Input
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="relative">
+                    <Textarea
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      placeholder="Describe the image you want to generate..."
+                      className="w-full h-32 p-3 border border-gray-200 rounded-lg bg-white text-black placeholder:text-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 pr-20"
+                    />
+                    <div className="absolute right-2 bottom-2 flex space-x-1">
                       <button
-                        onClick={() => handleDownloadImage()}
-                        className="absolute top-2 right-2 p-2 bg-white bg-opacity-80 rounded-full shadow-md hover:bg-opacity-100 hover:shadow-lg transition-all duration-200 ease-in-out transform hover:scale-110"
-                        title="download"
+                        onClick={handleOptimizePrompt}
+                        disabled={isOptimizingPrompt}
+                        className="p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Optimize prompt"
                       >
-                        <Download className="w-5 h-5 text-gray-700 hover:text-blue-600 transition-colors duration-200" />
+                        {isOptimizingPrompt ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Wand2 className="w-4 h-4" />
+                        )}
+                      </button>
+                      <button
+                        onClick={handleRandomPrompt}
+                        disabled={isGeneratingRandom}
+                        className="p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Generate random prompt"
+                      >
+                        {isGeneratingRandom ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Shuffle className="w-4 h-4" />
+                        )}
                       </button>
                     </div>
-                  )}
-                </>
-              ) : (
-                <div className="text-center">
-                  <ImageIcon className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-                  <p>Generated image will appear here</p>
-                </div>
-              )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 参数设置 */}
+              <Card className="border-gray-200 bg-white">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black flex items-center">
+                    <Settings className="w-5 h-5 mr-2 text-blue-600" />
+                    Parameters
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium text-black mb-2 block">
+                      Aspect Ratio
+                    </Label>
+                    <div className="grid grid-cols-5 gap-2 items-end">
+                      <button
+                        onClick={() => {
+                          setImageWidth(1024);
+                          setImageHeight(1024);
+                          setSelectedShape("square");
+                        }}
+                        className="flex flex-col items-center"
+                      >
+                        <div
+                          className={`w-12 h-12 border-2 rounded transition-colors flex items-center justify-center ${
+                            selectedShape === "square"
+                              ? "border-green-500 bg-green-50"
+                              : "border-gray-300 hover:border-green-500"
+                          }`}
+                        >
+                          <span className="text-xs font-medium">1:1</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setImageWidth(1024);
+                          setImageHeight(768);
+                          setSelectedShape("landscape");
+                        }}
+                        className="flex flex-col items-center"
+                      >
+                        <div
+                          className={`w-12 h-9 border-2 rounded transition-colors flex items-center justify-center ${
+                            selectedShape === "landscape"
+                              ? "border-green-500 bg-green-50"
+                              : "border-gray-300 hover:border-green-500"
+                          }`}
+                        >
+                          <span className="text-xs font-medium">4:3</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setImageWidth(768);
+                          setImageHeight(1024);
+                          setSelectedShape("portrait");
+                        }}
+                        className="flex flex-col items-center"
+                      >
+                        <div
+                          className={`w-9 h-12 border-2 rounded transition-colors flex items-center justify-center ${
+                            selectedShape === "portrait"
+                              ? "border-green-500 bg-green-50"
+                              : "border-gray-300 hover:border-green-500"
+                          }`}
+                        >
+                          <span className="text-xs font-medium">3:4</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setImageWidth(1024);
+                          setImageHeight(576);
+                          setSelectedShape("wide");
+                        }}
+                        className="flex flex-col items-center"
+                      >
+                        <div
+                          className={`w-12 h-6.5 border-2 rounded transition-colors flex items-center justify-center ${
+                            selectedShape === "wide"
+                              ? "border-green-500 bg-green-50"
+                              : "border-gray-300 hover:border-green-500"
+                          }`}
+                        >
+                          <span className="text-xs font-medium">16:9</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setImageWidth(576);
+                          setImageHeight(1024);
+                          setSelectedShape("tall");
+                        }}
+                        className="flex flex-col items-center"
+                      >
+                        <div
+                          className={`w-6.5 h-12 border-2 rounded transition-colors flex items-center justify-center ${
+                            selectedShape === "tall"
+                              ? "border-green-500 bg-green-50"
+                              : "border-gray-300 hover:border-green-500"
+                          }`}
+                        >
+                          <span className="text-xs font-medium">9:16</span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleGenerateImage}
+                    disabled={isGeneratingImage}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+                  >
+                    {isGeneratingImage ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      "Generate Image"
+                    )}
+                  </Button>
+                  {/* Verification Modal */}
+                  <TurnstileModal
+                    open={showVerificationModal}
+                    onOpenChange={setShowVerificationModal}
+                    siteKey={
+                      process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+                      "0x4AAAAAAAxxxxxxxxxxxxxxxxxx"
+                    }
+                    onSuccess={(token) => {
+                      setTurnstileToken(token);
+                      apiClient.setTurnstileToken(token);
+                      setShowVerificationModal(false);
+                      // 验证成功后执行生成逻辑
+                      handleGenerateImageAfterVerification();
+                    }}
+                    onError={() => {
+                      setTurnstileToken(null);
+                      apiClient.clearTurnstileToken();
+                      setShowVerificationModal(false);
+                    }}
+                    onExpire={() => {
+                      setTurnstileToken(null);
+                      apiClient.clearTurnstileToken();
+                      setShowVerificationModal(false);
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* 右侧结果展示 */}
+            <div className="lg:col-span-2">
+              <div className="relative h-full min-h-[400px] flex items-center justify-center">
+                {generatedImage || isImageLoading ? (
+                  <>
+                    {isImageLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center z-10 bg-gray-50 rounded-lg">
+                        <LoadingSpinner size="md" message="generating..." />
+                      </div>
+                    )}
+                    {generatedImage && (
+                      <div className="relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={generatedImage}
+                          alt="Generated"
+                          className={`max-w-full max-h-full object-contain rounded-lg ${isImageLoading ? "opacity-0" : "opacity-100"}`}
+                          onLoad={() => {
+                            // 图片加载完成时，同时关闭两个加载状态
+                            setIsImageLoading(false);
+                            setIsGeneratingImage(false);
+                          }}
+                          onError={() => {
+                            // 图片加载失败时，同时关闭两个加载状态
+                            setIsImageLoading(false);
+                            setIsGeneratingImage(false);
+                            setError("Image loading failed");
+                          }}
+                        />
+                        {/* 下载按钮 */}
+                        <button
+                          onClick={() => handleDownloadImage()}
+                          className="absolute top-2 right-2 p-2 bg-white bg-opacity-80 rounded-full shadow-md hover:bg-opacity-100 hover:shadow-lg transition-all duration-200 ease-in-out transform hover:scale-110"
+                          title="download"
+                        >
+                          <Download className="w-5 h-5 text-gray-700 hover:text-blue-600 transition-colors duration-200" />
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center">
+                    <ImageIcon className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+                    <p>Generated image will appear here</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <ImageGallery onPromptSelect={handleInspirationSelect} />
+        )}
 
         {/* Messages */}
         {error && (

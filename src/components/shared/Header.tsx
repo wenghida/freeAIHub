@@ -47,6 +47,12 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link
+              href="/#get-inspired"
+              className="transition-colors font-medium text-black hover:text-blue-600"
+            >
+              Get Inspired
+            </Link>
+            <Link
               href="/#key-features"
               className="transition-colors font-medium text-black hover:text-blue-600"
             >
@@ -108,6 +114,13 @@ export default function Header() {
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10">
               <div className="space-y-2 py-6">
+                <Link
+                  href="/#get-inspired"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Get Inspired
+                </Link>
                 {aiServices.map((service) => (
                   <Link
                     key={service.id}
@@ -118,6 +131,13 @@ export default function Header() {
                     {service.title}
                   </Link>
                 ))}
+                <Link
+                  href="/#get-inspired"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Get Inspired
+                </Link>
                 <Link
                   href="/#key-features"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"

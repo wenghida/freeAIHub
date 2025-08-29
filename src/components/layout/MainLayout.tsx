@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import Header from "@/components/shared/Header";
+import { Toaster } from "@/components/ui/sonner";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -12,6 +13,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-white text-black">
       <Header />
+      <Toaster position="top-right" richColors />
 
       <main>{children}</main>
 
@@ -24,7 +26,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 className="flex items-center space-x-2 mb-4 cursor-pointer"
               >
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <img src="/favicon.ico" alt="CalmSky AI" className="w-5 h-5" />
+                  <img
+                    src="/favicon.ico"
+                    alt="CalmSky AI"
+                    className="w-5 h-5"
+                  />
                 </div>
                 <h3 className="text-xl font-bold text-black font-sans">
                   CalmSky AI
