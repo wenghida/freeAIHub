@@ -81,8 +81,8 @@ export default function HomePage() {
     }
 
     // 验证prompt长度
-    if (trimmedPrompt.length > 500) {
-      setError("Image description cannot exceed 500 characters");
+    if (trimmedPrompt.length > 1000) {
+      setError("Image description cannot exceed 1000 characters");
       return;
     }
 
@@ -219,7 +219,6 @@ export default function HomePage() {
   // 处理灵感图片选择
   const handleInspirationSelect = (inspirationPrompt: string) => {
     setPrompt(inspirationPrompt);
-    setSuccess("Prompt applied from inspiration gallery");
     clearMessages();
 
     // 滚动到文本输入区域

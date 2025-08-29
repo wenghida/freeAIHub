@@ -81,8 +81,8 @@ export default function TextToImagePage() {
     }
 
     // 验证prompt长度
-    if (trimmedPrompt.length > 500) {
-      setError("Image description cannot exceed 500 characters");
+    if (trimmedPrompt.length > 1000) {
+      setError("Image description cannot exceed 1000 characters");
       return;
     }
 
@@ -220,7 +220,6 @@ export default function TextToImagePage() {
   const handleInspirationSelect = (inspirationPrompt: string) => {
     setPrompt(inspirationPrompt);
     setShowInspiration(false);
-    setSuccess("Prompt applied from inspiration gallery");
     clearMessages();
   };
 

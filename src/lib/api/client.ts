@@ -193,8 +193,8 @@ export class ApiClient {
 
     // 防止XSS攻击，清理特殊字符
     const sanitizedPrompt = trimmedPrompt.replace(/[<>]/g, "");
-    if (sanitizedPrompt.length > 500) {
-      throw new ApiError(400, "Prompt text cannot exceed 500 characters");
+    if (sanitizedPrompt.length > 1000) {
+      throw new ApiError(400, "Prompt text cannot exceed 1000 characters");
     }
 
     const requestBody = {
@@ -225,8 +225,8 @@ export class ApiClient {
 
     // 防止XSS攻击，清理特殊字符
     const sanitizedPrompt = trimmedPrompt.replace(/[<>]/g, "");
-    if (sanitizedPrompt.length > 500) {
-      throw new ApiError(400, "Prompt text cannot exceed 500 characters");
+    if (sanitizedPrompt.length > 1000) {
+      throw new ApiError(400, "Prompt text cannot exceed 1000 characters");
     }
 
     // 验证图片URL

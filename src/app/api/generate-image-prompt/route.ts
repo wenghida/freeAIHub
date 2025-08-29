@@ -358,7 +358,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     try {
       // 构建Pollinations API URL
       const systemInstruction =
-        "Please create a detailed and creative image generation prompt that is suitable for artificial intelligence image generation, with no more than 500 characters, based on the following elements:";
+        "Please create a detailed and creative image generation prompt that is suitable for artificial intelligence image generation, with no more than 1000 characters, based on the following elements:";
       const fullPrompt = `${systemInstruction}\n\n${basePrompt}`;
 
       const apiUrl = new URL(

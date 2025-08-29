@@ -34,8 +34,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
     // 清理和验证prompt输入
     const sanitizedPrompt = body.prompt.trim().replace(/[<>]/g, "");
-    if (sanitizedPrompt.length > 500) {
-      const error = Errors.promptTooLong(500);
+    if (sanitizedPrompt.length > 1000) {
+      const error = Errors.promptTooLong(1000);
       logger.logResponse(
         logId,
         error.status,
@@ -46,7 +46,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     }
 
     // 构建优化后的prompt指令
-    const systemInstruction = "Please create a detailed and creative image generation prompt that is suitable for artificial intelligence image generation, with no more than 500 characters, based on the following user input:";
+    const systemInstruction = "Please create a detailed and creative image generation prompt that is suitable for artificial intelligence image generation, with no more than 1000 characters, based on the following user input:";
     const fullPrompt = `${systemInstruction}\n\n${sanitizedPrompt}`;
 
     // 调用Pollinations API优化prompt

@@ -151,7 +151,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ onPromptSelect }) => {
   // 处理图片点击 - 直接应用prompt
   const handleImageClick = (prompt: string) => {
     onPromptSelect(prompt);
-    toast.success("Prompt applied successfully!");
   };
 
   return (

@@ -113,14 +113,14 @@ Each route implements:
 - **Method**: POST
 - **Body**: prompt, width, height, model, seed
 - **Cache**: 5 minutes TTL
-- **Validation**: prompt max 500 chars, valid image sizes
+- **Validation**: prompt max 1000 chars, valid image sizes
 
 ### Image-to-Image
 
 - **Endpoint**: `/api/image-to-image`
 - **Method**: POST
 - **Body**: prompt, imageUrl, model, strength
-- **Validation**: prompt max 500 chars, valid image URL, strength 0-1
+- **Validation**: prompt max 1000 chars, valid image URL, strength 0-1
 
 ### Text-to-Text
 

@@ -108,8 +108,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   // 清理和验证prompt输入，防止注入攻击
   const sanitizedPrompt = prompt.trim().replace(/[<>]/g, "");
-  if (sanitizedPrompt.length > 500) {
-    const error = Errors.promptTooLong(500);
+  if (sanitizedPrompt.length > 1000) {
+    const error = Errors.promptTooLong(1000);
     logger.logResponse(
       logId,
       error.status,

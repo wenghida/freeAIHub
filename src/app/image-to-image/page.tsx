@@ -93,8 +93,8 @@ export default function ImageToImagePage() {
     }
 
     // 验证prompt长度
-    if (trimmedPrompt.length > 500) {
-      setError("Image description cannot exceed 500 characters");
+    if (trimmedPrompt.length > 1000) {
+      setError("Image description cannot exceed 1000 characters");
       return;
     }
 
@@ -115,8 +115,8 @@ export default function ImageToImagePage() {
     }
 
     // 验证prompt长度
-    if (trimmedPrompt.length > 500) {
-      setError("Image description cannot exceed 500 characters");
+    if (trimmedPrompt.length > 1000) {
+      setError("Image description cannot exceed 1000 characters");
       return;
     }
 
