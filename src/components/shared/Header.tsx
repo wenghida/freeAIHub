@@ -3,81 +3,90 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-
-const navigation = [
-  { name: "Text to Image", href: "/text-to-image" },
-  { name: "Text to Text", href: "/text-to-text" },
-  { name: "Text to Speech", href: "/text-to-speech" },
-  { name: "Speech to Text", href: "/speech-to-text" },
-];
+import { usePathname } from "next/navigation";
 
 export default function Header() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <nav
-        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
-        aria-label="Global"
-      >
-        <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5">
-            <span className="flex items-center gap-2 text-xl font-bold text-gray-900">
-              <img src="/favicon.ico" alt="CalmSky AI" className="h-6 w-6" />
-              CalmSky AI
-            </span>
-          </Link>
-        </div>
+  const aiServices = [
+    {
+      id: "generate-image-prompt",
+      title: "Generate Image Prompt",
+      href: "/generate-image-prompt",
+    },
+    {
+      id: "text-to-text",
+      title: "Text to Text",
+      href: "/text-to-text",
+    },
+  ];
 
-        <div className="flex lg:hidden">
+  const isActiveService = (serviceId: string) => {
+    return (
+      pathname === `/${serviceId}` ||
+      (serviceId === "generate-image-prompt" &&
+        pathname === "/generate-image-prompt")
+    );
+  };
+
+  return (
+    <header className="border-b border-gray-200 bg-white sticky top-0 z-40 shadow-sm">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2 cursor-pointer">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <img src="/favicon.ico" alt="CalmSky AI" className="w-5 h-5" />
+            </div>
+            <h1 className="text-xl font-bold text-black font-sans">
+              CalmSky AI
+            </h1>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link
+              href="/#key-features"
+              className="transition-colors font-medium text-black hover:text-blue-600"
+            >
+              Features
+            </Link>
+            <Link
+              href="/#faq"
+              className="transition-colors font-medium text-black hover:text-blue-600"
+            >
+              FAQs
+            </Link>
+            {aiServices.map((service) => (
+              <Link
+                key={service.id}
+                href={service.href}
+                className={`transition-colors font-medium ${
+                  isActiveService(service.id)
+                    ? "text-blue-600 border-b-2 border-blue-600 pb-1"
+                    : "text-black hover:text-blue-600"
+                }`}
+              >
+                {service.title}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Mobile menu button */}
           <button
             type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            className="md:hidden -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="sr-only">Open main menu</span>
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
+      </div>
 
-        <div className="hidden lg:flex lg:gap-x-12">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="text-sm font-semibold leading-6 text-gray-900 hover:text-purple-600 transition-colors"
-            >
-              {item.name}
-            </Link>
-          ))}
-        </div>
-
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
-          <Link
-            href="/privacy"
-            className="text-sm font-semibold leading-6 text-gray-900 hover:text-purple-600 transition-colors"
-          >
-            Privacy
-          </Link>
-          <Link
-            href="/terms"
-            className="text-sm font-semibold leading-6 text-gray-900 hover:text-purple-600 transition-colors"
-          >
-            Terms
-          </Link>
-          <Link
-            href="https://github.com/pollinations/pollinations"
-            className="text-sm font-semibold leading-6 text-gray-900 hover:text-purple-600 transition-colors"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            GitHub
-          </Link>
-        </div>
-      </nav>
-
-      {/* 移动端菜单 */}
-      <div className={`lg:hidden ${mobileMenuOpen ? "block" : "hidden"}`}>
+      {/* Mobile menu */}
+      <div className={`md:hidden ${mobileMenuOpen ? "block" : "hidden"}`}>
         <div className="fixed inset-0 z-50"></div>
         <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
@@ -99,16 +108,30 @@ export default function Header() {
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10">
               <div className="space-y-2 py-6">
-                {navigation.map((item) => (
+                {aiServices.map((service) => (
                   <Link
-                    key={item.name}
-                    href={item.href}
+                    key={service.id}
+                    href={service.href}
                     className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    {item.name}
+                    {service.title}
                   </Link>
                 ))}
+                <Link
+                  href="/#key-features"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Features
+                </Link>
+                <Link
+                  href="/#faq"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  FAQs
+                </Link>
               </div>
               <div className="py-6 space-y-2">
                 <Link

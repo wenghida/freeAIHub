@@ -499,15 +499,14 @@ export default function HomePage() {
         </section>
 
         {/* Features Section */}
-        <section className="py-16 px-4 bg-gray-50">
+        <section id="key-features" className="py-16 px-4 bg-white">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-black mb-4 font-sans">
-                Why Choose CalmSky AI
+                Features
               </h2>
               <p className="text-gray-600 text-lg font-serif">
-                We are committed to providing users with the best AI service
-                experience
+                Discover the powerful features of our AI platform
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -553,7 +552,11 @@ export default function HomePage() {
               <Card className="text-center border-gray-200 bg-white hover:bg-gray-50 transition-colors">
                 <CardHeader>
                   <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <img src="/favicon.ico" alt="CalmSky AI" className="w-6 h-6" />
+                    <img
+                      src="/favicon.ico"
+                      alt="CalmSky AI"
+                      className="w-6 h-6"
+                    />
                   </div>
                   <CardTitle className="text-lg font-sans text-black">
                     High Quality Output
@@ -562,6 +565,118 @@ export default function HomePage() {
                     Professional AI models ensure high-quality output content
                   </CardDescription>
                 </CardHeader>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section id="faq" className="py-16 px-4 bg-white">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-black mb-4 font-sans">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-gray-600 text-lg font-serif">
+                Common questions and answers about the CalmSky AI platform
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="border-gray-200 bg-gray-50">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black">
+                    What is CalmSky AI?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 font-serif">
+                    CalmSky AI is a free AI multi-functional conversion platform based on the Pollinations.AI API, providing five core functions: text-to-image, text-to-text, text-to-speech, and speech-to-text.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-gray-200 bg-gray-50">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black">
+                    Is there a cost to use CalmSky AI?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 font-serif">
+                    No. CalmSky AI is completely free to use, requires no registration, and has no hidden fees. We are committed to providing users with the best AI service experience.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-gray-200 bg-gray-50">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black">
+                    Do I need to register an account to use CalmSky AI?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 font-serif">
+                    No. You can use all AI functions directly without any cumbersome registration process.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-gray-200 bg-gray-50">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black">
+                    What is the quality of the generated images?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 font-serif">
+                    We use professional AI models to ensure high-quality output content. You can choose different dimensions and ratios to generate images as needed.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-gray-200 bg-gray-50">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black">
+                    What dimensions are supported by the text-to-image function?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 font-serif">
+                    Multiple dimension ratios are supported, including 1:1 (square), 4:3 (landscape), 3:4 (portrait), 16:9 (widescreen), and 9:16 (vertical).
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-gray-200 bg-gray-50">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black">
+                    What processing options are included in the text-to-text function?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 font-serif">
+                    The text-to-text function includes various intelligent text processing options such as translation, polishing, summarization, continuation, and style conversion.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-gray-200 bg-gray-50">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black">
+                    Are there any usage limitations on the generated content?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 font-serif">
+                    We have set reasonable rate limits (20 requests per minute per IP address) to ensure service stability and fairness.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-gray-200 bg-gray-50">
+                <CardHeader>
+                  <CardTitle className="text-lg font-sans text-black">
+                    How is content security guaranteed?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 font-serif">
+                    We implement Cloudflare Turnstile human verification to prevent abuse, all communications are encrypted via HTTPS, and users' sensitive information is not stored.
+                  </p>
+                </CardContent>
               </Card>
             </div>
           </div>

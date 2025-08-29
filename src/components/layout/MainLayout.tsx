@@ -1,126 +1,17 @@
 "use client";
 
 import { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Globe,
-  ArrowRight,
-  ImageIcon,
-  MessageSquare,
-  Volume2,
-  Mic,
-  Wand2,
-  Zap,
-  Shield,
-  Clock,
-} from "lucide-react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import Header from "@/components/shared/Header";
 
 interface MainLayoutProps {
   children: ReactNode;
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const aiServices = [
-    // {
-    //   id: "image-to-image",
-    //   title: "Image to Image",
-    //   description: "Transform your existing images with AI-powered editing",
-    //   icon: Wand2,
-    //   color: "bg-indigo-50 text-indigo-600 border-indigo-200",
-    // },
-    {
-      id: "generate-image-prompt",
-      title: "Generate Image Prompt",
-      description:
-        "Create detailed prompts for AI image generation by selecting dimensions",
-      icon: Wand2,
-      color: "bg-indigo-50 text-indigo-600 border-indigo-200",
-    },
-    {
-      id: "text-to-text",
-      title: "Text to Text",
-      description:
-        "Intelligent text processing including translation, summarization, and rewriting",
-      icon: MessageSquare,
-      color: "bg-green-50 text-green-600 border-green-200",
-    },
-    // {
-    //   id: "text-to-speech",
-    //   title: "Text to Speech",
-    //   description: "Convert text into natural and fluent speech playback",
-    //   icon: Volume2,
-    //   color: "bg-purple-50 text-purple-600 border-purple-200",
-    // },
-    // {
-    //   id: "speech-to-text",
-    //   title: "Speech to Text",
-    //   description: "Accurately recognize speech content and convert it to text",
-    //   icon: Mic,
-    //   color: "bg-orange-50 text-orange-600 border-orange-200",
-    // },
-  ];
-
-  const isActiveService = (serviceId: string) => {
-    return (
-      pathname === `/${serviceId}` ||
-      (serviceId === "generate-image-prompt" &&
-        pathname === "/generate-image-prompt")
-    );
-  };
-
   return (
     <div className="min-h-screen bg-white text-black">
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-40 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link
-              href="/"
-              className="flex items-center space-x-2 cursor-pointer"
-            >
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <img src="/favicon.ico" alt="CalmSky AI" className="w-5 h-5" />
-              </div>
-              <h1 className="text-xl font-bold text-black font-sans">
-                CalmSky AI
-              </h1>
-            </Link>
-
-            {/* Function Navigation */}
-            <nav className="hidden md:flex items-center space-x-6">
-              {aiServices.map((service) => (
-                <Link
-                  key={service.id}
-                  href={
-                    service.id === "generate-image-prompt"
-                      ? "/generate-image-prompt"
-                      : `/${service.id}`
-                  }
-                  className={`transition-colors font-medium ${
-                    isActiveService(service.id)
-                      ? "text-blue-600 border-b-2 border-blue-600 pb-1"
-                      : "text-black hover:text-blue-600"
-                  }`}
-                >
-                  {service.title}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main>{children}</main>
 
