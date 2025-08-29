@@ -107,7 +107,7 @@ export class ApiClient {
     try {
       // 设置请求超时
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2分钟超时
 
       // Add Turnstile token to request body if available and this is a POST request
       let body = options?.body;
@@ -169,7 +169,7 @@ export class ApiClient {
           throw new ApiError(
             0,
             "Request timeout",
-            "Request did not complete within 30 seconds"
+            "Request did not complete within 2 minutes"
           );
         }
         throw new ApiError(0, "Network error", error.message);
